@@ -1,0 +1,222 @@
+import unidecode, string,json
+
+message = open(r"c:\users\sana\desktop\message.txt","r",encoding="utf8")
+fichier = open(r"c:\users\sana\desktop\fichier.txt","w",encoding="utf8")
+
+
+
+#couche applicat°
+def Menu():
+    """menu avec choix de quattres options"""
+    global que_voulez_vous_faire,liste_option
+    que_voulez_vous_faire = input("Que voulez-vous faire? :\n"
+                                  "Entrée\t\t\t\t   :"
+                                  "\n\t\t\t\t\t\t1- Lire Message \n"
+                                  "\t\t\t\t\t\t2- Écrire Message \n"
+                                  "\t\t\t\t\t\t3- Sauvegarder Message\n"
+                                  "\t\t\t\t\t\t4- Quitter \n\t\t\t\t\t\t"
+                                  ":")
+    liste_option = ["1", "2", "3", "4"]
+
+def rappeller_menu():
+    """pour ne pas rappeller la
+    fonction menu dans les fonctions du menu"""
+    Menu()
+    while que_voulez_vous_faire == liste_option[0]:
+            LectureMessage(fichier,message)
+            codage_LectureMSG()
+
+
+            Menu()
+    while  que_voulez_vous_faire == liste_option[1]:
+            EcritureMessage()
+
+
+            Menu()
+    while que_voulez_vous_faire == liste_option[2]:
+            SauvegarderMessage()
+            codage_EcrireMSG()
+            Menu()
+    if que_voulez_vous_faire == liste_option[3]:
+        Quitter()
+#couche logique
+
+def LectureMessage(fichier ,message):
+    """Lit le fichier : message et écrit correctement le message dans le fichier : fichier"""
+    global ligne
+    for ligne in message:
+        liste_ponctuation = [",", ";", "!", "?", ".", "'", "(", ")", "\"", "@", "|", "&", "%", "£", "µ", "/", "\\", "=",
+                             "-", "*", "§", "^", ":", "[", "]"]
+        for i in range(len(liste_ponctuation)):
+            ligne = ligne.replace(liste_ponctuation[i],"")
+        ligne = ligne.split()
+        ligne = "".join(ligne)
+
+        ligne = ligne.strip()
+        ligne = unidecode.unidecode(ligne)
+        ligne = ligne.upper()
+    fichier = open(r"c:\users\sana\desktop\fichier.txt", "w", encoding="utf8")
+    fichier.write(ligne)
+    fichier.close()
+
+
+
+
+
+def EcritureMessage():
+    """Écrit un message (chaîne de caractères) et retire les ponctuation ainsi que
+    les slash etc
+    Met le message en majuscules """
+
+
+    global msg
+    msg = input("Entrez votre message : ")
+
+    for i in range(len(msg)):
+        liste_ponctuation = [",", ";", "!", "?", ".", "'", "(", ")","\"","@",
+                             "|","&","%","£","µ","/","\\","=","-","*","§","^",":","[","]"]
+        for j in range(len(liste_ponctuation)):
+            msg = msg.replace(liste_ponctuation[j],"")
+
+
+    msg = unidecode.unidecode(msg)
+    msg = msg.upper()
+    msg = msg.strip()
+    msg = msg.split()
+    msg = "".join(msg)
+
+def Quitter():
+    """Quitte le menu """
+
+
+    print("Au revoir")
+
+#couche data
+def SauvegarderMessage():
+    """Sauvegarde le message écrit dans la f() EcritureMessage() dans un fichier nouveau_fichier.txt"""
+
+
+    nouveau_fichier = open(r"c:\users\sana\desktop\nouveau_fichier.txt", "w", encoding="utf8")
+    liste_ponctuation = [",", ";", "!", "?", ".", "'", "(", ")"]
+    for i in range(len(msg)):
+        for j in range(len(liste_ponctuation)):
+            if liste_ponctuation[j] in msg:
+                msg.replace(msg[i], "")
+    nouveau_fichier.write(msg)
+    nouveau_fichier.close()
+
+
+#fin couche data
+
+
+
+
+
+def listAlphabet():
+    """Crée deux listes (tableau_entree et tableau_sortie)"""
+    global liste_alphabet
+    liste_alphabet =  list(string.ascii_uppercase)
+    liste_alphabet="".join(liste_alphabet)
+    return liste_alphabet
+
+def rotors():
+    """Utilise les rotors et le(s) réflecteur(s) du fichier rotors.json"""
+    global rotor1_liste, rotor2_liste, rotor3_liste
+
+
+    rotor1_chaine="EKMFLGDQVZNTOWYHXUSPAIBRCJ"
+    rotor1_liste = []
+    for i in range(len(rotor1_chaine)):
+        rotor1_liste.append(rotor1_chaine[i])
+    rotor1_liste="".join(rotor1_liste)
+    return rotor1_liste
+
+
+def tours_rotors():
+    pass
+def reflecteurs():
+    global liste_lettre_reflecteur_A,liste_lettre_reflecteur_B
+    with open('rotors.json',"r",encoding="utf8") as r:
+
+        r = json.load(r)
+        reflecteurs = (r["reflecteurs"])
+
+        reflec1 = reflecteurs[0]
+
+        reflec1 = (reflec1["RFA"])
+        liste_lettre_reflecteur_A = []
+        for i in range(len(reflec1)):
+            liste_lettre_reflecteur_A.append(reflec1[i])
+        print(liste_lettre_reflecteur_A)
+
+        reflec2 = reflecteurs[1]
+
+        reflec2 = (reflec2["RFB"])
+        liste_lettre_reflecteur_B=[]
+        for i in range(len(reflec2)):
+            liste_lettre_reflecteur_B.append(reflec2[i])
+        print(liste_lettre_reflecteur_B)
+
+
+def codage_LectureMSG():
+    """Pour coder un message"""
+    global  liste_alphabet,ligne, fichier,rotor1_liste
+    rotors()
+    listAlphabet()
+
+    fichier =LectureMessage(fichier,message)
+    fichier= open(r"c:\users\sana\desktop\fichier.txt","r",encoding="utf8")
+
+
+
+
+    for ligne in fichier:
+        traduction = ligne.maketrans(liste_alphabet,rotor1_liste)
+        ligne = ligne.translate(traduction)
+
+
+
+    fichier = open(r"c:\users\sana\desktop\fichier.txt","w",encoding="utf8")
+    fichier.write(ligne)
+
+def codage_EcrireMSG():
+    global liste_alphabet, msg, ligne, fichier, rotor1_liste
+    listAlphabet()
+    rotors()
+
+
+    nouveau_fichier = open(r"c:\users\sana\desktop\nouveau_fichier.txt", "r", encoding="utf8")
+    for ligne2 in nouveau_fichier:
+        traduction = ligne2.maketrans(liste_alphabet,rotor1_liste)
+        ligne2 = ligne2.translate(traduction)
+
+    nouveau_fichier = open(r"c:\users\sana\desktop\nouveau_fichier.txt", "w", encoding="utf8")
+    nouveau_fichier.write(ligne2)
+
+
+    fichier.close()
+
+
+
+def decodage():
+    rotors()
+    listAlphabet()
+    global liste_alphabet,msg,ligne2, ligne, fichier
+    fichier = LectureMessage(fichier, message)
+    fichier = open(r"c:\users\sana\desktop\fichier.txt", "r", encoding="utf8")
+    for ligne in fichier:
+        traduction = ligne.maketrans(rotor1_liste,liste_alphabet)
+        ligne = ligne.translate(traduction)
+
+    fichier = open(r"c:\users\sana\desktop\fichier.txt","w",encoding="utf8")
+    fichier.write(ligne)
+
+    fichier.close()
+    nouveau_fichier = open(r"c:\users\sana\desktop\nouveau_fichier.txt", "r", encoding="utf8")
+    for ligne2 in nouveau_fichier:
+        traduction = ligne.maketrans(rotor1_liste,liste_alphabet)
+        ligne2 = ligne2.translate(traduction)
+    nouveau_fichier = open(r"c:\users\sana\desktop\nouveau_fichier.txt", "w", encoding="utf8")
+    nouveau_fichier.write(ligne2)
+
+rappeller_menu()
